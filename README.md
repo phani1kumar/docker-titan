@@ -62,7 +62,7 @@ docker run -d --name elas1 -v /mnt/Share/titandb/es_index_data:/usr/share/elasti
 ```
 
 Following is a visual depiction of how the whole thing would look like:
-![alt Docker Topology](/docker_topology.jpg)
+![docker_topology](https://cloud.githubusercontent.com/assets/9419954/9651888/b36eb066-5233-11e5-8e59-fbf3b811d378.jpg)
 
 One more thing to note is, when you are using the docker containers as above with mounted file system, you should be aware of the facts mentioned in the [stackoverflow thread](http://stackoverflow.com/questions/16549833/cassandra-commit-and-recovery-on-a-single-node). I've spent good 2 days hitting around the bush to figure this out. [Details](https://groups.google.com/forum/#!topic/aureliusgraphs/VhLrgs4EsKo) of the issue I've faced. 
 
