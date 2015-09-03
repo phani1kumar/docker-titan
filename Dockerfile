@@ -21,31 +21,49 @@ RUN sed -i 's/required[ ]*pam_loginuid/optional\tpam_loginuid/g' /etc/pam.d/sshd
 	&& cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys \
 	&& chmod 600 /root/.ssh/id_dsa /root/.ssh/authorized_keys \
 	&& chmod 644 /root/.ssh/id_dsa.pub
-
-RUN git clone https://github.com/apache/incubator-tinkerpop.git \
-	&& cd incubator-tinkerpop/ 
-RUN cd incubator-tinkerpop && git checkout tags/3.0.0-incubating \
-	&& MVN_OPTS="-DskipTests -Denforcer.skip=true" \
-	&& TINKERPOP_VERSION=$( cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}') \
-	&& echo "TINKERPOP_VERSION IS: $TINKERPOP_VERSION"
+ENV CUSTOMIZE_TINKERPOP="YES"
+RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+then \
+	git clone https://github.com/apache/incubator-tinkerpop.git; \
+	cd incubator-tinkerpop/; \
+fi
+RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+then \
+	cd incubator-tinkerpop; \
+	git checkout tags/3.0.0-incubating; \
+	TINKERPOP_VERSION=$( cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}'); \
+	echo "TINKERPOP_VERSION IS: $TINKERPOP_VERSION"; \
+fi
 #If you want to perform any quick corrections to the checked out tinkerpop repository, you could do here and mark your own version name
-#RUN cd incubator-tinkerpop && sed -i "s/onStartup:/onStartup: \{\/\//g" gremlin-server/scripts/generate-modern-readonly.groovy \
-#	&& sed -i "s/ctx.logger.info/\/\/ctx.logger.info/g" gremlin-server/scripts/generate-modern-readonly.groovy \
-#	&& sed -i "s/TinkerFactory.generateClassic/\/\/TinkerFactory.generateClassic/g" gremlin-server/scripts/generate-modern-readonly.groovy \
-#	&& sed -i "s/onStartup:/onStartup: \{\/\//g" gremlin-server/scripts/generate-modern.groovy \
-#	&& sed -i "s/ctx.logger.info/\/\/ctx.logger.info/g" gremlin-server/scripts/generate-modern.groovy \
-#	&& sed -i "s/TinkerFactory.generateClassic/\/\/TinkerFactory.generateClassic/g" gremlin-server/scripts/generate-modern.groovy \
-#	&& pwd
+#RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+#then \
+#	cd incubator-tinkerpop; \
+#	sed -i "s/onStartup:/onStartup: \{\/\//g" gremlin-server/scripts/generate-modern-readonly.groovy; \
+#	sed -i "s/ctx.logger.info/\/\/ctx.logger.info/g" gremlin-server/scripts/generate-modern-readonly.groovy; \
+#	sed -i "s/TinkerFactory.generateClassic/\/\/TinkerFactory.generateClassic/g" gremlin-server/scripts/generate-modern-readonly.groovy; \
+#	sed -i "s/onStartup:/onStartup: \{\/\//g" gremlin-server/scripts/generate-modern.groovy; \
+#	sed -i "s/ctx.logger.info/\/\/ctx.logger.info/g" gremlin-server/scripts/generate-modern.groovy; \
+#	sed -i "s/TinkerFactory.generateClassic/\/\/TinkerFactory.generateClassic/g" gremlin-server/scripts/generate-modern.groovy; \
+#	pwd; \
+#fi
 
 #Ideally you wouldn't need to specify any changes to the TINKERPOP version, if you have done any changes like in above commented
 # code, you may wish to change the version, to be sure that your changes are picked up by titan build that follows
 ENV TINKERPOP_VERSION="3.0.0-MY-SNAPSHOT"
-RUN cd incubator-tinkerpop && sed -i "s/^    <version>.*<\/version>/    <version>$TINKERPOP_VERSION<\/version>/g" pom.xml \
-	&& sed -i "s/^        <version>.*<\/version>/        <version>$TINKERPOP_VERSION<\/version>/g" $(find . -maxdepth 2 -mindepth 2 -type f -name 'pom.xml') \
-	&& cat $(find . -maxdepth 2 -mindepth 2 -type f -name 'pom.xml') | grep "^        <version>.*<\/version>" \
-	&& T_VERSION=$( cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}') \
-	&& if [ ! -z $T_VERSION ]; then echo "TINKERPOP_VERSION IS: $T_VERSION"; fi
-RUN cd incubator-tinkerpop && mvn clean install -DskipTests -Denforcer.skip=true
+RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+then \
+	cd incubator-tinkerpop; \
+	sed -i "s/^    <version>.*<\/version>/    <version>$TINKERPOP_VERSION<\/version>/g" pom.xml; \
+	sed -i "s/^        <version>.*<\/version>/        <version>$TINKERPOP_VERSION<\/version>/g" $(find . -maxdepth 2 -mindepth 2 -type f -name 'pom.xml'); \
+	cat $(find . -maxdepth 2 -mindepth 2 -type f -name 'pom.xml') | grep "^        <version>.*<\/version>"; \
+	T_VERSION=$( cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}'); \
+	echo "TINKERPOP_VERSION IS: $T_VERSION"; \
+fi
+RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+then \
+	cd incubator-tinkerpop; \
+	mvn clean install -DskipTests -Denforcer.skip=true; \
+fi
 
 ENV TITAN_VERSION="0.9.0-SNAPSHOT"
 ENV TITAN_BRANCH="titan09"
@@ -60,8 +78,12 @@ else \
 	cd titan/; \
 	git checkout tags/$TITAN_VERSION; \
 fi 
-RUN cd titan && sed -i "s/tinkerpop.version.*/tinkerpop.version>$TINKERPOP_VERSION<\/tinkerpop.version>/g" pom.xml \
-	&& cat pom.xml | grep tinkerpop.version
+RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \ 
+then \
+	cd titan; \
+	sed -i "s/tinkerpop.version.*/tinkerpop.version>$TINKERPOP_VERSION<\/tinkerpop.version>/g" pom.xml; \
+	cat pom.xml | grep tinkerpop.version; \
+fi
 RUN cd titan && mvn clean install -DskipTests=true -Paurelius-release -Dgpg.skip=true
 RUN cd titan && rm -f conf/core-site.xml conf/mapred-site.xml \
 	&& cd ../ \
