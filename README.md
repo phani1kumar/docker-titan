@@ -46,11 +46,25 @@ The minimum system requirements for this stack is 1 GB with 2 cores.
 Run the required external dependencies, in our case : [Cassandra](https://github.com/docker-library/cassandra) and [ElasticSearch](https://github.com/docker-library/elasticsearch). Following are the snippets to run theese nodes, but I would encourage you to go to the respective github projects to get the latest and relevant instructions
 
 ```
-docker run --name cas1 -d cassandra:tag
-docker run -d --name elas1 elasticsearch:tag
+# I am using the 2.0 version of cassandra and 1.5 version of elasticsearch. 
+# At the moment these are the versions supported by titan-0.9.0-M2. 
+# If the versions change, please feel free to use the correct versions
+docker run --name cas1 -d cassandra:2.0
+docker run -d --name elas1 elasticsearch:1.5
 docker run -d -P --name mytitan --link elas1:elasticsearch --link cas1:cassandra <YOUR TITAN IMAGE>
 ```
 If you wish to run Cassandra / Elasticsearch as clusters of their own, please refer to the documentation from the above mentioned project. For simplicity, I am omitting that topic here. 
+
+When running in docker containers, I would encourage you to mount the data directories in your host filesystem. This you can do as follows:
+```
+docker run -d --name cas1 -v /mnt/Share/titandb/cassdata:/var/lib/cassandra/data cassandra:2.0
+docker run -d --name elas1 -v /mnt/Share/titandb/es_index_data:/usr/share/elasticsearch/data elasticsearch:1.5
+```
+
+Following is a visual depiction of how the whole thing would look like:
+![alt Docker Topology](/docker_topology.jpg)
+
+One more thing to note is, when you are using the docker containers as above with mounted file system, you should be aware of the facts mentioned in the [stackoverflow thread](http://stackoverflow.com/questions/16549833/cassandra-commit-and-recovery-on-a-single-node). I've spent good 2 days hitting around the bush to figure this out. [Details](https://groups.google.com/forum/#!topic/aureliusgraphs/VhLrgs4EsKo) of the issue I've faced. 
 
 ### Ports
 
@@ -76,6 +90,6 @@ I've tested this container with the following containers:
 	- docker-library/elasticsearch: This is the ElasticSearch Indexing backend for Titan. It provides search capabilities for Titan graph datasets.
 
 ## Hurdles faced and how did I overcome
-
-
+1. When using using the docker containers with mounted file system, you should be aware of the facts mentioned in the [stackoverflow thread](http://stackoverflow.com/questions/16549833/cassandra-commit-and-recovery-on-a-single-node). I've spent good 2 days hitting around the bush to figure this out. [Details](https://groups.google.com/forum/#!topic/aureliusgraphs/VhLrgs4EsKo) of the issue I've faced. 
+2. Not being able to connect to the titan-server through gremlin-driver. This has been addressed by the suggestion from stephen at the [Tinkerpop3-815](https://issues.apache.org/jira/browse/TINKERPOP3-815)
 
