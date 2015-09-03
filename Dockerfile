@@ -22,12 +22,12 @@ RUN sed -i 's/required[ ]*pam_loginuid/optional\tpam_loginuid/g' /etc/pam.d/sshd
 	&& chmod 600 /root/.ssh/id_dsa /root/.ssh/authorized_keys \
 	&& chmod 644 /root/.ssh/id_dsa.pub
 ENV CUSTOMIZE_TINKERPOP="YES"
-RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 then \
 	git clone https://github.com/apache/incubator-tinkerpop.git; \
 	cd incubator-tinkerpop/; \
 fi
-RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 then \
 	cd incubator-tinkerpop; \
 	git checkout tags/3.0.0-incubating; \
@@ -35,7 +35,7 @@ then \
 	echo "TINKERPOP_VERSION IS: $TINKERPOP_VERSION"; \
 fi
 #If you want to perform any quick corrections to the checked out tinkerpop repository, you could do here and mark your own version name
-#RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+#RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 #then \
 #	cd incubator-tinkerpop; \
 #	sed -i "s/onStartup:/onStartup: \{\/\//g" gremlin-server/scripts/generate-modern-readonly.groovy; \
@@ -50,7 +50,7 @@ fi
 #Ideally you wouldn't need to specify any changes to the TINKERPOP version, if you have done any changes like in above commented
 # code, you may wish to change the version, to be sure that your changes are picked up by titan build that follows
 ENV TINKERPOP_VERSION="3.0.0-MY-SNAPSHOT"
-RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 then \
 	cd incubator-tinkerpop; \
 	sed -i "s/^    <version>.*<\/version>/    <version>$TINKERPOP_VERSION<\/version>/g" pom.xml; \
@@ -59,7 +59,7 @@ then \
 	T_VERSION=$( cat pom.xml | grep "^    <version>.*</version>$" | awk -F'[><]' '{print $3}'); \
 	echo "TINKERPOP_VERSION IS: $T_VERSION"; \
 fi
-RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \
+RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 then \
 	cd incubator-tinkerpop; \
 	mvn clean install -DskipTests -Denforcer.skip=true; \
@@ -78,7 +78,7 @@ else \
 	cd titan/; \
 	git checkout tags/$TITAN_VERSION; \
 fi 
-RUN if [ $CUSTOMIZE_TINKERPOP=="YES" ]; \ 
+RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \ 
 then \
 	cd titan; \
 	sed -i "s/tinkerpop.version.*/tinkerpop.version>$TINKERPOP_VERSION<\/tinkerpop.version>/g" pom.xml; \
