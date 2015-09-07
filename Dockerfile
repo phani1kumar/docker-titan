@@ -100,4 +100,4 @@ ADD run.sh /opt/$TITAN_DEPLOYMENT/
 EXPOSE 8182
 EXPOSE 8184
 
-CMD ["/bin/sh", "-e", "/opt/$TITAN_DEPLOYMENT/run.sh"]
+CMD /bin/sh  -e "/opt/$TITAN_DEPLOYMENT/run.sh"
