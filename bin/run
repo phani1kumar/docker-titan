@@ -1,0 +1,8 @@
+#!/bin/sh
+
+docker run -d --name es1 elasticsearch:1.5
+docker run -d --name cs1 cassandra:2.1
+docker build -t titan .
+docker run -d -p 8182:8182 --name mytitan --link es1:elasticsearch --link cs1:cassandra titan
+
+
