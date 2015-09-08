@@ -70,11 +70,21 @@ One more thing to note is, when you are using the docker containers as above wit
 
     docker-compose up
 
-wait a minute and curl the server
+To test that the server is running (with websockets) run this:
 
     bin/test
 
-access the gremlin console
+
+if You see this - everything is good:
+```
+HTTP/1.1 101 Web Socket Protocol Handshake
+Upgrade: WebSocket
+Connection: Upgrade
+WebSocket-Origin: http://localhost:8182
+WebSocket-Location: ws://localhost/gremlin
+```
+
+To access the gremlin console:
 
     bin/gremlin
 
