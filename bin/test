@@ -1,0 +1,3 @@
+#!/bin/sh
+
+curl -i -N -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Host: localhost" -H "Origin: http://localhost:8182" http://localhost:8182/gremlin?gremlin=100-1

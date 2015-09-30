@@ -66,6 +66,28 @@ Following is a visual depiction of how the whole thing would look like:
 
 One more thing to note is, when you are using the docker containers as above with mounted file system, you should be aware of the facts mentioned in the [stackoverflow thread](http://stackoverflow.com/questions/16549833/cassandra-commit-and-recovery-on-a-single-node). I've spent good 2 days hitting around the bush to figure this out. [Details](https://groups.google.com/forum/#!topic/aureliusgraphs/VhLrgs4EsKo) of the issue I've faced. 
 
+### Run on Linux with docker-compose
+
+    docker-compose up
+
+To test that the server is running (with websockets) run this:
+
+    bin/test
+
+
+if You see this - everything is good:
+```
+HTTP/1.1 101 Web Socket Protocol Handshake
+Upgrade: WebSocket
+Connection: Upgrade
+WebSocket-Origin: http://localhost:8182
+WebSocket-Location: ws://localhost/gremlin
+```
+
+To access the gremlin console:
+
+    bin/gremlin
+
 ### Ports
 
 8182: Websocket port (incase you are using the Websocket(default) version in the run.sh file)

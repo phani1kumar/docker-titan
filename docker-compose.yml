@@ -1,0 +1,26 @@
+titan:
+  build: titan
+  links:
+    - elasticsearch
+    - cassandra
+  ports:
+    - "8182:8182"
+  restart: always
+
+cassandra:
+  image: cassandra:2.0
+  volumes:
+    - "/var/lib/cassandra/data:/var/lib/cassandra/data"
+  restart: always
+
+elasticsearch:
+  image: elasticsearch:1.5
+  volumes:
+    - "/usr/share/elasticsearch/data:/usr/share/elasticsearch/data"
+  restart: always
+
+# docker run -d --name cas1 -v /var/lib/cassandra/data:/var/lib/cassandra/data cassandra:2.0
+# docker run -d --name elas1 -v /usr/share/elasticsearch/data:/usr/share/elasticsearch/data elasticsearch:1.5
+# docker build -t titan .
+# docker run -P --name mytitan2 --link elas1:elasticsearch --link cas1:cassandra -p 8182:8182 -p 8184:8184 titan
+

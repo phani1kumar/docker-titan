@@ -1,4 +1,4 @@
-#!/bin/bssh
+#!/bin/bash
 
 BIN=./bin
 SLEEP_INTERVAL_S=2
