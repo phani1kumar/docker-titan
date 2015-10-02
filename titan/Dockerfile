@@ -21,7 +21,7 @@ RUN sed -i 's/required[ ]*pam_loginuid/optional\tpam_loginuid/g' /etc/pam.d/sshd
 	&& cat /root/.ssh/id_dsa.pub >> /root/.ssh/authorized_keys \
 	&& chmod 600 /root/.ssh/id_dsa /root/.ssh/authorized_keys \
 	&& chmod 644 /root/.ssh/id_dsa.pub
-ENV CUSTOMIZE_TINKERPOP="YES"
+ENV CUSTOMIZE_TINKERPOP="NO"
 RUN if [ $CUSTOMIZE_TINKERPOP -eq "YES" ]; \
 then \
 	git clone https://github.com/apache/incubator-tinkerpop.git; \
@@ -65,8 +65,8 @@ then \
 	mvn clean install -DskipTests -Denforcer.skip=true; \
 fi
 
-ENV TITAN_VERSION="0.9.0-SNAPSHOT"
-ENV TITAN_BRANCH="titan09"
+ENV TITAN_VERSION="1.0.1-SNAPSHOT"
+ENV TITAN_BRANCH="titan10"
 
 RUN if [ ! -z $TITAN_BRANCH ]; \
 then \
